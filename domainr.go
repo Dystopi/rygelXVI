@@ -49,6 +49,15 @@ func NewClient(apiKey string, httpClient *http.Client) (*Client, error) {
 }
 
 func (c *Client) SearchDomainr(domain string) (*DomainrSearchResponse, error) {
+	validDomain, err := validateDomain(domain)
+	if err != nil {
+		return nil, err
+	}
+
+	if validDomain != true {
+		return nil, fmt.Errorf("%s is not a valid domain", domain)
+	}
+
 	searchURL, err := url.Parse("https://domainr.p.mashape.com/v2/search")
 	if err != nil {
 		return nil, err
@@ -69,6 +78,14 @@ func (c *Client) SearchDomainr(domain string) (*DomainrSearchResponse, error) {
 }
 
 func (c *Client) SearchActive(domain string) (*DomainrSearchResponse, error) {
+	validDomain, err := validateDomain(domain)
+	if err != nil {
+		return nil, err
+	}
+
+	if validDomain != true {
+		return nil, fmt.Errorf("%s is not a valid domain", domain)
+	}
 	searchResults, err := c.SearchDomainr(domain)
 	if err != nil {
 		return nil, err
@@ -95,6 +112,16 @@ func (c *Client) SearchActive(domain string) (*DomainrSearchResponse, error) {
 }
 
 func (c *Client) DomainrStatus(domains []string) (map[string]bool, error) {
+	for _, domain := range domains {
+		validDomain, err := validateDomain(domain)
+		if err != nil {
+			return nil, err
+		}
+
+		if validDomain != true {
+			return nil, fmt.Errorf("%s is not a valid domain", domain)
+		}
+	}
 	statusURL, err := url.Parse("https://domainr.p.mashape.com/v2/status")
 	if err != nil {
 		return nil, err
